@@ -1,0 +1,175 @@
+* {color:#373737; font-family: 'Microsoft YaHei'}
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video , i , em {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing:border-box;
+  border: 0;
+  font-size: 0.25rem;
+  vertical-align: baseline;
+}
+
+html {
+  line-height: 1;
+}
+html,body{
+  height:100%;
+}
+ol, ul {
+  list-style: none;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+caption, th, td {
+  text-align: left;
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+q, blockquote {
+  quotes: none;
+}
+q:before, q:after, blockquote:before, blockquote:after {
+  content: "";
+  content: none;
+}
+a,a:hover{
+  text-decoration:none;
+  color:#373737;}
+a img {
+  border: none;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {
+  display: block;
+}
+
+input,button,select,textarea{ outline:none; border:none}
+
+i,em{font-style: normal;}
+
+textarea{resize:none;}
+li{list-style-type:none; }
+/*========================================================================================================*/
+/*公共宽度1200px*/
+.wrap{
+  margin: 0 auto;
+}
+.margin-top-15{
+  margin-top: 0.15rem;
+}
+.margin-top-20{
+  margin-top: 0.2rem;
+}
+.margin-bot-15{
+  margin-bottom: 0.15rem;
+}
+.padding-tb-30{
+  padding: 0.3rem 0;
+}
+.padding-top-20{
+  padding-top: 0.2rem;
+}
+.padding-20{
+  padding: 0.2rem;
+}
+.padding-bot-30{
+  padding-bottom: 0.3rem;
+}
+.padding-top-70{
+  padding-top: 1rem;
+}
+/*浮动*/
+.fn-left{
+  float: left;
+}
+.fn-right{
+  float: right;
+}
+/*定位 */
+.fn-relative{
+  position: relative;
+}
+.fn-absolute{
+  position: absolute;
+}
+.fn-clear{
+  clear: both;
+
+}
+/*字号*/
+.font-size-28{
+  font-size: 0.28rem;
+}
+.font-size-30{
+  font-size: 0.30rem;
+}
+
+/*a标签样式*/
+.vip-news-list-bm a{
+  text-decoration: underline!important;
+}
+.detail a{
+  text-decoration: underline!important;
+}
+.notice .content a{
+  text-decoration: underline!important;
+}
+.detail-img img{
+  width:100%;
+  hegiht:100%;
+}
+/*插件样式*/
+.mint-cell-wrapper{
+  background-image:none!important;
+}
+.mint-cell:last-child{
+  background-image:none!important;
+}
+.mint-toast-text{
+  color: #fff !important;
+}
+.mint-cell-wrapper .mint-cell-title .mint-cell-text{
+  color: #333333 !important;
+  font-size: 0.28rem !important;
+}
+.mint-header-title{
+  color: #fff;
+  font-size: 0.3rem !important;
+}
+.mint-header-button .mintui{
+  color: #fff;
+}
+. mint-button--normal{
+  color: #fff;
+}
+.mint-header .mint-button .mint-button-text{
+  color: #fff;
+}
+.mint-header-button.is-right button{
+  border:1px solid #fff;
+  width:1rem !important;
+}
+#qqLoginBtn a img{
+  opacity: 0;
+}
+#wb_connect_btn a img{
+   opacity: 0;
+ }
