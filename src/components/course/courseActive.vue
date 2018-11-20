@@ -3,13 +3,13 @@
       <div class="active_left">
         <div class="active_price">
           <i>￥</i>
-          <span>1000</span>
-          <i>.00</i>
+          <span>{{killPrice}}</span>
+          <i>{{floatPrice}}</i>
         </div>
         <div class="original_price">￥1680.00</div>
       </div>
       <div class="active_right">
-        剩余名额：<i>100</i>人
+        剩余名额：<i>{{killRemain}}</i>人
       </div>
       <div class="circular_border"></div>
     </div>
@@ -20,7 +20,10 @@
         name: "courseActive",
       data(){
           return{
-
+            wholePrice:"1000.00",
+            killPrice:"",
+            floatPrice:"",
+            killRemain:100,//剩余名额
           }
       },
       props:["associated"],
@@ -31,7 +34,9 @@
       },
       methods:{
         getCourseData(){
-          console.log(this.associated);
+          // console.log(this.associated);
+          this.floatPrice=this.wholePrice.substring(this.wholePrice.length-3);
+          this.killPrice=this.wholePrice.slice(0,4);
         }
       }
     }

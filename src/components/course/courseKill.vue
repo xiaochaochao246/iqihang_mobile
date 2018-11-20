@@ -5,16 +5,16 @@
         <div class="courseBanner">
           <div class="killPrice">
             <span>限时秒杀价</span>
-            <span>￥<i>1000</i>.00</span>
+            <span>￥<i>{{killPrice}}</i>{{floatPrice}}</span>
           </div>
-          <div class="killBtn">前1000人</div>
+          <div class="killBtn">前{{killPrice}}人</div>
         </div>
         <div class="killTime">
           <div class="killTime_desc" >
             {{killDesc}}
           </div>
           <div class="killTime_time" v-if="killTime_time_beforeday">
-            00:00:00开始秒杀
+            {{floatStr}}开始秒杀
           </div>
           <div class="killTime_time" v-show="killTime_time_day">
             <div>{{before_kill_h}}</div><i>：</i>
@@ -25,14 +25,14 @@
         <div class="triangle_right"></div>
       </div>
       <!--正在秒杀-->
-      <div v-if="kill_date" style="clear: both">
+      <div v-if="kill_date">
         <div class="kill_date_Banner">
           <div class="kill_date_Price">
-            <span>
+            <span v-show="!isSoldOut">
               <img src="./courseImg/icon_person.png" alt="">
               已有4871人学习
             </span>
-            <span class="kill_date_null" v-show="false">
+            <span class="kill_date_null" v-show="isSoldOut">
               已抢光
             </span>
           </div>
@@ -55,14 +55,21 @@
           return{
             killDesc:"",
             killTime_time:false,
-            startStr:"2018/11/20 00:00:00",//秒杀开始时间
-            endStr:"2018/11/20 18:00:00",//秒杀结束时间
+            startStr:"",//秒杀开始时间
+            floatStr:"",//截取秒杀时间
+            endStr:"",//秒杀结束时间
+            wholePrice:"",//秒杀价格
+            orginPrice:"",
+            killPrice:"",
+            floatPrice:"",
             // 秒杀前
             killTime_time_beforeday:true,
             killTime_time_day:false,
             kill_before:false,
             // 秒杀中
             kill_date:false,
+            isSoldOut:false,//是否抢光
+            killRemain:"",//剩余名额
             // 倒计时
             before_kill_d:0,
             before_kill_h:0,
@@ -79,11 +86,21 @@
         }
       },
       methods:{
+          getData(){
+            this.startStr="2018/11/21 00:00:00";
+            this.endStr="2018/11/22 00:00:00";
+            this.killRemain=100;
+            this.wholePrice="1000.00";
+            this.orginPrice="1680.00";
+            this.floatPrice=this.wholePrice.substring(this.wholePrice.length-3);
+            this.killPrice=this.wholePrice.slice(0,4);
+          },
         getInterface(){
-          console.log(this.associated);
+
         },
         getKillInfo(){
-            // 获取当前时间
+          this.getData();
+          // 获取当前时间
             var date = new Date();
             var now = date.getTime();
             //活动开始时间
@@ -96,13 +113,16 @@
               if(this.before_kill_d>0){
                 // 秒杀前几天
                 this.kill_before=true;
+                this.isSoldOut=true;         //未开始抢
                 this.killTime_time_day=false;
-                this.killDesc="2018/11/22";
+                this.killDesc=this.startStr.slice(0,10);
+                this.floatStr=this.startStr.slice(10,19);
               }else if(this.before_kill_d==0){
                 // 秒杀前一天
                 this.kill_before=true;
                 this.killTime_time_day=true;
                 this.killTime_time_beforeday=false;
+                this.isSoldOut=true;         //未开始抢
                 this.killDesc="距开始";
                 this.before_kill_h = Math.floor(leftTime/1000/60/60%24);
                 if(this.before_kill_h<=9){
@@ -145,20 +165,24 @@
                 if(this.before_kill_s<=9){
                   this.before_kill_s='0'+this.before_kill_s;
                 }
+                if(this.killRemain==0){
+                  this.isSoldOut=true;    //已售完
+                }
                 setTimeout(this.getKillInfo,1000);
               }else{
-                console.log("秒杀结束");
+                //活动结束
                 this.isactiveShow=false;
+                this.isSoldOut=true;    //活动结束，不买完也卖完
               }
             }
+            this.toCourseDetail();
         },
         toCourseDetail(){
-            this.$emit("isactiveShow",this.isactiveShow);
+          this.$emit("isactiveShow",this.isactiveShow,this.isSoldOut);
         }
       },
       mounted(){
-          this.getKillInfo();
-          this.toCourseDetail()
+        this.getKillInfo();
       }
     }
 </script>
@@ -185,7 +209,7 @@
   }
   .killPrice span{
     color: #fffd9b;
-    font-size: .25rem;
+    font-size: .23rem;
   }
   .killPrice span:nth-child(2){
     margin-top:.1rem;
@@ -288,6 +312,9 @@
     font-size: .27rem;
     width: 46%;
     height:.68rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     background: linear-gradient(#fefee8, #f7f48b);
     background-size: 100% 100%;
   }
@@ -296,7 +323,7 @@
     color: #ed1f4b;
   }
   .kill_date_date div{
-    margin-top:.1rem;
+    /*margin-top:.1rem;*/
     font-weight: 600;
     display: inline-block;
     height:.46rem;
@@ -313,7 +340,6 @@
   }
   .item_desc{
     color: #ed1f4b;
-    margin-left:.2rem;
     margin-right:.15rem;
   }
   .kill_date_right{

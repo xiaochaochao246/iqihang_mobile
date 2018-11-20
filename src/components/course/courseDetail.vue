@@ -8,17 +8,18 @@
       <courseKill @isactiveShow="isactiveShow" v-show="isKillShow" :associated='associated'/>
 
         <div class="courseTxt">
-            <div class="courseTitle"><img v-show="detail.type_product_classType == '2'" src="./courseImg/line_course.png" alt=""><h3 v-html="detail.type_product_title"></h3></div>
+          <div class="courseTitle"><img v-show="detail.type_product_classType == '2'" src="./courseImg/line_course.png" alt=""><h3 v-html="detail.type_product_title"></h3></div>
           <!--秒杀活动-->
-          <courseActive v-show="isKillShow" :associated='associated'/>
-            <div class="coursePrince">
-              <div v-show="!isKillShow">
-                <h3>￥<span>{{detail.type_product_lowPrice}}</span>.00</h3><i>此价格中包含服务包</i>
-              </div>
-                <!-- 试听视频按钮 -->
-                <img @click="auditionClick" v-if="classType == '1' && videoId != '1'" class="auditionBtn" src="./courseImg/audition.png" alt="">
-                <p v-show="!isKillShow">￥{{detail.type_product_highPrice + '.00'}}</p>
+          <courseActive v-show="!isshowActive" :associated="associated"/>
+
+          <div class="coursePrince">
+            <div v-show="isshowActive">
+              <h3>￥<span>{{detail.type_product_lowPrice}}</span>.00</h3><i>此价格中包含服务包</i>
             </div>
+            <!-- 试听视频按钮 -->
+            <img @click="auditionClick" v-if="classType == '1' && videoId != '1'" class="auditionBtn" src="./courseImg/audition.png" alt="">
+            <p v-show="isshowActive">￥{{detail.type_product_highPrice + '.00'}}</p>
+          </div>
         </div>
         <ul v-show="detail.type_product_classType == '2'" class="courseInfo">
             <li><img src="./courseImg/icon_class.png" alt="">课时 {{detail.type_product_classhour}}</li>
@@ -71,6 +72,7 @@ export default {
       freeCoupon: '',
       // 秒杀活动
       isKillShow:false,
+      isshowActive:false,//是否卖完
     };
   },
   components:{
@@ -97,9 +99,10 @@ export default {
       })
     },
     // 秒杀活动
-    isactiveShow(isshow){
-      // console.log(isshow);
+    isactiveShow(isshow,isshowAct){
       this.isKillShow=isshow;
+      this.isshowActive=isshowAct;
+      this.toCourseConter();
     },
     //时间转换
     dataTime(time,type) {
@@ -185,9 +188,12 @@ export default {
           console.log(err);
         });
     },
+    toCourseConter(){
+      this.$emit("isshowActive",this.isshowActive);
+    }
   },
   mounted() {
-      this.activityData()
+      this.activityData();
   }
 };
 </script>

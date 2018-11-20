@@ -67,7 +67,7 @@
         </ul>
       </div>
     </div> -->
-    <courseDetail :classType='classType' :videoId='videoId' :lessonCouponArr='lessonCouponArr' :activeBox='activeBox' :courseDetailData="courseDetailData" :associated='associated' />
+    <courseDetail @isshowActive="showActive" :classType='classType' :videoId='videoId' :lessonCouponArr='lessonCouponArr' :activeBox='activeBox' :courseDetailData="courseDetailData" :associated='associated' />
     <serviceAndCoupons @servicesStatus='servicesClick' :loginStatus='userStatus' v-show="servicesBox.length > 0" :homeImg='honeImg' :servicesBox='servicesBox' />
     <popularCollocation :userId='userId' :loginStatus='loginStatus' :addCar='addCar' :lowPrice='lowPrice' :backgroundImage='honeImg' :hotclassBox='hotclassBox' />  
     <div class="couerse-dp">
@@ -338,7 +338,7 @@
                 <div v-if="this.kucun !='0'">
                   <div class="bugtn" v-if="this.shareAll != ''" @click="share">分享领取</div>
                   <div class="bugtn" v-if=" this.shareAll == ''" @click="addCar">加入购物车</div>
-                  <div class="bugtn btnbg" v-if="this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
+                  <div class="bugtn btnbg" :class="{actived:isact}" v-if="this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
                   <div class="bugtn btnbg" v-if="this.lowPrice =='0.00'" @click="receiveBuy">免费领取</div>
                 </div>
               </div>
@@ -350,7 +350,7 @@
                   <div v-if="this.kucun !='0' && this.vipStart == '0'">
                     <div class="bugtn" v-if="this.shareAll != ''&& this.buyStatus == '1'" @click="share">分享领取</div>
                     <div class="bugtn" v-if=" this.shareAll == '' && this.buyStatus == '1'" @click="addCar">加入购物车</div>
-                    <div class="bugtn btnbg" v-if="this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
+                    <div class="bugtn btnbg" :class="{actived:isact}" v-if="this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
                     <div class="bugtn btnbg" v-if="this.lowPrice =='0.00' && this.buyStatus == '1'" @click="receiveBuy">免费领取</div>
                   </div>
                 </div>
@@ -398,6 +398,8 @@ export default {
   },
   data() {
     return {
+      isActive:true,//秒杀活动
+      isact:false,
       backUrlShow:require("./courseImg/back.png"),
       collectionUrlShow: require("./courseImg/collection.png"),
       collectionStatus: false,
@@ -732,7 +734,6 @@ export default {
           }.json?v=` + new Date().getTime()
         )
         .then(response => {
-          console.log(response)
           this.catalogId = response.data.courseDetailData.hits.hits[0]._source.type_product_catalogId;
           let directory = response.data.categoryData.hits.hits,
             directoryArr = { first: [], second: [], three: [], four: [] },
@@ -925,6 +926,10 @@ export default {
           console.log(err);
         });
     },
+    showActive(show){
+      // console.log(show);
+      this.isActive=show;
+    },
     classBox(response) {
       this.pcImg = response._source.type_product_pictures; //pc课程图片
       this.honeImg = response._source.type_product_mainPicture; //h5课程图片
@@ -990,6 +995,10 @@ export default {
         this.bugtype = "立即预约";
       } else {
         this.bugtype = "立即购买";
+      }
+      if(this.isActive==false){
+        this.isact=true;
+        this.bugtype = "立即秒杀";
       }
       //直播开始时间
       var downdate = new Date(response._source.type_product_curriculaTime);
@@ -3317,6 +3326,10 @@ export default {
 .btnbg {
   background: #3acbae;
 }
+.actived{
+  background-color: #e20d3b;
+}
+
 
 .buybtn {
   width: 100%;
