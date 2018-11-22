@@ -7,19 +7,19 @@
             <span>限时秒杀价</span>
             <span>￥<i>{{killPrice}}</i>{{floatPrice}}</span>
           </div>
-          <div class="killBtn">前{{killPrice}}人</div>
+          <div class="killBtn">前{{inventory}}人</div>
         </div>
         <div class="killTime">
-          <div class="killTime_desc" >
+          <div class="killTime_desc">
             {{killDesc}}
           </div>
           <div class="killTime_time" v-if="killTime_time_beforeday">
             {{floatStr}}开始秒杀
           </div>
           <div class="killTime_time" v-show="killTime_time_day">
-            <div>{{before_kill_h}}</div><i>：</i>
-            <div>{{before_kill_m}}</div><i>：</i>
-            <div>{{before_kill_s}}</div>
+            <div>{{kill_h}}</div><i>：</i>
+            <div>{{kill_m}}</div><i>：</i>
+            <div>{{kill_s}}</div>
           </div>
         </div>
         <div class="triangle_right"></div>
@@ -30,7 +30,7 @@
           <div class="kill_date_Price">
             <span v-show="!isSoldOut">
               <img src="./courseImg/icon_person.png" alt="">
-              已有4871人学习
+              已有{{salesVolume}}人学习
             </span>
             <span class="kill_date_null" v-show="isSoldOut">
               已抢光
@@ -39,9 +39,9 @@
         </div>
         <div class="kill_date_date">
           <div class="item_desc">{{killDesc}}</div>
-          <div class="item">{{before_kill_h}}</div><i>：</i>
-          <div class="item">{{before_kill_m}}</div><i>：</i>
-          <div class="item">{{before_kill_s}}</div>
+          <div class="item">{{kill_h}}</div><i>：</i>
+          <div class="item">{{kill_m}}</div><i>：</i>
+          <div class="item">{{kill_s}}</div>
         </div>
         <div class="kill_date_right"></div>
       </div>
@@ -54,135 +54,205 @@
       data(){
           return{
             killDesc:"",
+            courseId:"",
             killTime_time:false,
-            startStr:"",//秒杀开始时间
+            active_start:0,//秒杀开始时间
             floatStr:"",//截取秒杀时间
-            endStr:"",//秒杀结束时间
+            active_end:0,//秒杀结束时间
             wholePrice:"",//秒杀价格
-            orginPrice:"",
             killPrice:"",
             floatPrice:"",
             // 秒杀前
             killTime_time_beforeday:true,
             killTime_time_day:false,
             kill_before:false,
+            showTime:0,      //展示时间
             // 秒杀中
             kill_date:false,
             isSoldOut:false,//是否抢光
             killRemain:"",//剩余名额
+            inventory:"",//库存
+            salesVolume:0,//学习人数，
             // 倒计时
-            before_kill_d:0,
-            before_kill_h:0,
-            before_kill_m:0,
-            before_kill_s:0,
+            kill_d:0,
+            kill_h:0,
+            kill_m:0,
+            kill_s:0,
             //是否显示活动
             isactiveShow:true,
+            activeDesc:false
           }
       },
       props:['associated'],
       watch:{
         associated(){
-          this.getInterface()
+          this.getInterface();
+          this.getData();
         }
       },
       methods:{
-          getData(){
-            this.startStr="2018/11/21 00:00:00";
-            this.endStr="2018/11/22 00:00:00";
-            this.killRemain=100;
-            this.wholePrice="1000.00";
-            this.orginPrice="1680.00";
-            this.floatPrice=this.wholePrice.substring(this.wholePrice.length-3);
-            this.killPrice=this.wholePrice.slice(0,4);
-          },
         getInterface(){
+          this.courseId=this.associated[0].associatedId;
+          this.salesVolume=this.associated[0].salesVolume;
+          console.log(this.salesVolume);
+        },
+        getData(){
+          // console.log(this.courseId);
+          this.axios.post("/es/index_time_limit/_search",{
+            "query": {
+              "bool": {
+                "must": [{
+                  "term": {
+                    "type_time_limit_dataType": "cut"
+                  }
+                },
+                  {
+                    "term": {
+                      "type_time_limit_courseId": this.courseId
+                    }
+                  }],
+                "must_not": [],
+                "should": []
+              }
+            },
+            "sort": [],
+            "aggs": {
 
+            }
+          }).then(res=>{
+            console.log(res.data);
+            if(res.data.hits.hits.length!=0){
+              var act= res.data.hits.hits[0]._source;
+              // 测试数据
+              // var startData = new Date("2018-11-21 16:21:00");
+              // var endData = new Date("2018-11-21 16:22:00");
+              // this.active_start=startData.getTime();
+              // this.active_end=endData.getTime();
+              // this.killRemain=100;
+              // 接口数据
+              this.active_start=act.type_time_limit_startTime;  //开始时间
+              this.active_end=act.type_time_limit_endTime;      //结束时间
+              this.killRemain=act.type_time_limit_fakeSales;    //剩余名额
+              this.inventory=act.type_time_limit_newCourseStock;  //库存
+              this.showTime=act.type_time_limit_showTime;         //展示时间
+              this.wholePrice=act.type_time_limit_newCoursePrice; //价格
+              // console.log(this.wholePrice.toFixed(2));
+              this.killPrice=Math.floor(this.wholePrice);
+              if(this.killPrice==this.wholePrice){
+                this.floatPrice=".00"
+              }else {
+                this.floatPrice="."+this.wholePrice.toString().split('.')[1];
+              }
+              this.getKillInfo();
+            }
+          });
+        },
+        //时间转换
+        dataTime(time) {
+          var date = new Date(time);
+          var year = date.getFullYear();
+          var month = date.getMonth() + 1;
+          month>9 ? month : month="0"+month;
+          var day = date.getDate();
+          day>9 ? day : day="0"+day;
+          var houer = date.getHours();
+          houer>9 ? houer : houer="0"+houer;
+          var minutes = date.getMinutes();
+          minutes>9 ? minutes : minutes="0"+minutes;
+          var seconds = date.getSeconds();
+          seconds>9 ? seconds : seconds="0"+seconds;
+          var dataTime = `${year}/${month}/${day} ${houer}:${minutes}:${seconds}`;
+          // var dataTime1 = `${year}-${month}-${day}`;
+          // if(type==0){
+          //   return dataTime1;
+          // }
+          // return dataTime;
+          this.killDesc=dataTime.slice(0,10);
+          this.floatStr=dataTime.slice(11,19);
         },
         getKillInfo(){
-          this.getData();
           // 获取当前时间
             var date = new Date();
             var now = date.getTime();
             //活动开始时间
-            var startDate = new Date(this.startStr);
-            var active_start = startDate.getTime();
-            // 时间差
-            var leftTime = active_start-now;
+            // var startDate = new Date(this.startStr);
+            // var active_start = startDate.getTime();
+          var rightTime = this.showTime - now; //展示时间
+          if(rightTime>0){
+            this.isactiveShow=false;
+            this.activeDesc=false;
+          }else{
+            this.isactiveShow=true;
+            this.activeDesc=false;
+          }
+          var leftTime = this.active_start-now;
             if(leftTime>0){
-              this.before_kill_d = Math.floor(leftTime/1000/60/60/24);
-              if(this.before_kill_d>0){
+              this.kill_d = Math.floor(leftTime/1000/60/60/24);
+              if(this.kill_d>0){
                 // 秒杀前几天
                 this.kill_before=true;
-                this.isSoldOut=true;         //未开始抢
                 this.killTime_time_day=false;
-                this.killDesc=this.startStr.slice(0,10);
-                this.floatStr=this.startStr.slice(10,19);
-              }else if(this.before_kill_d==0){
+                this.dataTime(this.active_start);
+              }else if(this.kill_d==0){
                 // 秒杀前一天
                 this.kill_before=true;
                 this.killTime_time_day=true;
                 this.killTime_time_beforeday=false;
-                this.isSoldOut=true;         //未开始抢
+                this.isSoldOut=false;         //未开始抢
                 this.killDesc="距开始";
-                this.before_kill_h = Math.floor(leftTime/1000/60/60%24);
-                if(this.before_kill_h<=9){
-                  this.before_kill_h='0'+this.before_kill_h;
-                }
-                // this.before_kill_h>9 ? this.before_kill_h:'0'+this.before_kill_h;
-                this.before_kill_m = Math.floor(leftTime/1000/60%60);
-                if(this.before_kill_m<=9){
-                  this.before_kill_m='0'+this.before_kill_m;
-                }
-                // this.before_kill_m>9 ? this.before_kill_m:'0'+this.before_kill_m;
-                this.before_kill_s = Math.floor(leftTime/1000%60);
-                // this.before_kill_s>9 ? this.before_kill_s:'0'+this.before_kill_s;
-                if(this.before_kill_s<=9){
-                  this.before_kill_s='0'+this.before_kill_s;
-                }
+                this.kill_h = Math.floor(leftTime/1000/60/60%24);
+                this.kill_h>9 ? this.kill_h : this.kill_h = "0"+this.kill_h;
+
+                this.kill_m = Math.floor(leftTime/1000/60%60);
+                this.kill_m>9 ? this.kill_m : this.kill_m = "0"+this.kill_m;
+
+                this.kill_s = Math.floor(leftTime/1000%60);
+                this.kill_s>9 ? this.kill_s : this.kill_s = "0"+this.kill_s;
                 setTimeout(this.getKillInfo,1000);
               }
             }else{
               //活动开始
-              var active_endDate = new Date(this.endStr);
-              var active_end = active_endDate.getTime();//活动结束时间
-              leftTime=active_end-now;
+              // var active_endDate = new Date(this.endStr);
+              // var active_end = active_endDate.getTime();//活动结束时间
+              leftTime=this.active_end-now;
               if(leftTime>0){
                 this.killDesc="距结束";
                 this.kill_date=true;
                 this.kill_before=false;
-                this.before_kill_h = Math.floor(leftTime/1000/60/60%24);
-                if(this.before_kill_h<=9){
-                  this.before_kill_h='0'+this.before_kill_h;
-                }
-                // this.before_kill_h>9 ? this.before_kill_h:'0'+this.before_kill_h;
-                this.before_kill_m = Math.floor(leftTime/1000/60%60);
-                if(this.before_kill_m<=9){
-                  this.before_kill_m='0'+this.before_kill_m;
-                }
-                // this.before_kill_m>9 ? this.before_kill_m:'0'+this.before_kill_m;
-                this.before_kill_s = Math.floor(leftTime/1000%60);
-                // this.before_kill_s>9 ? this.before_kill_s:'0'+this.before_kill_s;
-                if(this.before_kill_s<=9){
-                  this.before_kill_s='0'+this.before_kill_s;
-                }
+                this.kill_h = Math.floor(leftTime/1000/60/60%24);
+                this.kill_h>9 ? this.kill_h : this.kill_h = "0"+this.kill_h;
+
+                this.kill_m = Math.floor(leftTime/1000/60%60);
+                this.kill_m>9 ? this.kill_m : this.kill_m = "0"+this.kill_m;
+
+                this.kill_s = Math.floor(leftTime/1000%60);
+                this.kill_s>9 ? this.kill_s : this.kill_s = "0"+this.kill_s;
+
                 if(this.killRemain==0){
+                  this.activeDesc=false;
                   this.isSoldOut=true;    //已售完
+                }else{
+                  this.activeDesc=true;
+                  this.isSoldOut=false;
                 }
                 setTimeout(this.getKillInfo,1000);
               }else{
                 //活动结束
+                console.log("活动结束");
                 this.isactiveShow=false;
                 this.isSoldOut=true;    //活动结束，不买完也卖完
+                this.activeDesc=false
               }
             }
             this.toCourseDetail();
         },
         toCourseDetail(){
-          this.$emit("isactiveShow",this.isactiveShow,this.isSoldOut);
+          this.$emit("isactiveShow",this.isactiveShow,this.activeDesc);
         }
       },
       mounted(){
-        this.getKillInfo();
+        // this.getKillInfo();
+        // this.getData()
       }
     }
 </script>
@@ -217,21 +287,21 @@
   .killPrice span i{
     font-weight: 700;
     color: #fffd9b;
-    letter-spacing: .035rem;
-    font-size: .46rem;
+    letter-spacing: .015rem;
+    font-size: .5rem;
   }
   .killBtn{
     position: absolute;
     bottom:.1rem;
-    left:55.5%;
-    /*margin:.4rem 0 0 .3rem;*/
+    left:45.5%;
+    letter-spacing: .02rem;
     background-color: #c81a3f;
     display: inline-block;
     height:.45rem;
     color:#fff;
-    width:1.25rem;
     line-height: .45rem;
     text-align: center;
+    padding:0 .15rem;
     border-radius: 6px;
     font-size: .23rem;
   }
@@ -287,7 +357,7 @@
     height:.68rem;
     float: left;
     background-color: #ed1f4b;
-    width:54%;
+    width:56%;
   }
   .kill_date_Price span.kill_date_null{
     color:#fff;
@@ -310,7 +380,7 @@
   .kill_date_date{
     float: right;
     font-size: .27rem;
-    width: 46%;
+    width: 44%;
     height:.68rem;
     display: flex;
     justify-content: center;
@@ -344,7 +414,7 @@
   }
   .kill_date_right{
     position: absolute;
-    right:46%;
+    right:44%;
     top:0;
     width: 0px;
     height: 0px;

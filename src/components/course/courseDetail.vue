@@ -10,15 +10,15 @@
         <div class="courseTxt">
           <div class="courseTitle"><img v-show="detail.type_product_classType == '2'" src="./courseImg/line_course.png" alt=""><h3 v-html="detail.type_product_title"></h3></div>
           <!--秒杀活动-->
-          <courseActive v-show="!isshowActive" :associated="associated"/>
+          <courseActive v-show="isshowActive" :associated="associated"/>
 
           <div class="coursePrince">
-            <div v-show="isshowActive">
+            <div v-show="!isshowActive">
               <h3>￥<span>{{detail.type_product_lowPrice}}</span>.00</h3><i>此价格中包含服务包</i>
             </div>
             <!-- 试听视频按钮 -->
             <img @click="auditionClick" v-if="classType == '1' && videoId != '1'" class="auditionBtn" src="./courseImg/audition.png" alt="">
-            <p v-show="isshowActive">￥{{detail.type_product_highPrice + '.00'}}</p>
+            <p v-show="!isshowActive">￥{{detail.type_product_highPrice + '.00'}}</p>
           </div>
         </div>
         <ul v-show="detail.type_product_classType == '2'" class="courseInfo">
@@ -72,7 +72,7 @@ export default {
       freeCoupon: '',
       // 秒杀活动
       isKillShow:false,
-      isshowActive:false,//是否卖完
+      isshowActive:false,
     };
   },
   components:{
@@ -95,7 +95,8 @@ export default {
       this.detail = this.courseDetailData._source;
       this.associated.unshift({
           associatedId: this.$route.query.id,
-          associatedTitle: this.detail.type_product_title
+          associatedTitle: this.detail.type_product_title,
+          salesVolume: this.detail.type_product_salesVolume
       })
     },
     // 秒杀活动

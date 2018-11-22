@@ -6,7 +6,7 @@
           <span>{{killPrice}}</span>
           <i>{{floatPrice}}</i>
         </div>
-        <div class="original_price">￥1680.00</div>
+        <div class="original_price">￥{{orginPrice}}</div>
       </div>
       <div class="active_right">
         剩余名额：<i>{{killRemain}}</i>人
@@ -20,10 +20,12 @@
         name: "courseActive",
       data(){
           return{
-            wholePrice:"1000.00",
+            wholePrice:"",
             killPrice:"",
             floatPrice:"",
-            killRemain:100,//剩余名额
+            killRemain:0,//剩余名额
+            orginPrice:0,
+            courseId:""
           }
       },
       props:["associated"],
@@ -34,9 +36,46 @@
       },
       methods:{
         getCourseData(){
-          // console.log(this.associated);
-          this.floatPrice=this.wholePrice.substring(this.wholePrice.length-3);
-          this.killPrice=this.wholePrice.slice(0,4);
+          this.courseId=this.associated[0].associatedId;
+          this.axios.post("/es/index_time_limit/_search",{
+            "query": {
+              "bool": {
+                "must": [{
+                  "term": {
+                    "type_time_limit_dataType": "cut"
+                  }
+                },
+                  {
+                    "term": {
+                      "type_time_limit_courseId": this.courseId
+                    }
+                  }],
+                "must_not": [],
+                "should": []
+              }
+            },
+            "sort": [],
+            "aggs": {
+
+            }
+          }).then(res=>{
+            // console.log(res.data.hits.hits);
+            if(res.data.hits.hits.length!=0){
+              var act= res.data.hits.hits[0]._source;
+              this.wholePrice=act.type_time_limit_newCoursePrice;
+              this.killRemain=act.type_time_limit_fakeSales;    //剩余名额
+              // console.log(this.wholePrice.toFixed(2));
+              this.killPrice=Math.floor(this.wholePrice);
+              if(this.killPrice==this.wholePrice){
+                this.floatPrice=".00"
+              }else {
+                this.floatPrice="."+this.wholePrice.toString().split('.')[1];
+              }
+              // this.floatPrice="."+this.wholePrice.toString().split('.')[1];
+              // this.killPrice=Math.floor(this.wholePrice);
+              this.orginPrice=act.type_time_limit_oldCoursePrice;
+            }
+          });
         }
       }
     }
@@ -72,7 +111,7 @@
     text-decoration: line-through;
   }
   .active_right{
-    width: 41%;
+    width: 50%;
     position: absolute;
     right:0;
     top:0;
@@ -97,10 +136,10 @@
   .circular_border{
     position: absolute;
     top:0;
-    right:41%;
+    right:50%;
     width: 0;
     height: 0;
     border-bottom: 1.15rem solid #e20e3b;
-    border-left: 2.7rem solid transparent;
+    border-left: 2rem solid transparent;
   }
 </style>

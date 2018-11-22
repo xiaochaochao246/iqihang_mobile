@@ -77,7 +77,7 @@ export default {
             },2000)
           })
         }else if(res.status == 200 && res.data.status == '0'){
-          this.balance = res.data.data.money
+          this.balance = res.data.data.money;
           this.getOrderData(false)
         }
       })

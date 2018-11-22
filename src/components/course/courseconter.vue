@@ -338,7 +338,7 @@
                 <div v-if="this.kucun !='0'">
                   <div class="bugtn" v-if="this.shareAll != ''" @click="share">分享领取</div>
                   <div class="bugtn" v-if=" this.shareAll == ''" @click="addCar">加入购物车</div>
-                  <div class="bugtn btnbg" :class="{actived:isact}" v-if="this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
+                  <div class="bugtn btnbg" :class="{actived:isActive}" v-if="this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
                   <div class="bugtn btnbg" v-if="this.lowPrice =='0.00'" @click="receiveBuy">免费领取</div>
                 </div>
               </div>
@@ -350,7 +350,7 @@
                   <div v-if="this.kucun !='0' && this.vipStart == '0'">
                     <div class="bugtn" v-if="this.shareAll != ''&& this.buyStatus == '1'" @click="share">分享领取</div>
                     <div class="bugtn" v-if=" this.shareAll == '' && this.buyStatus == '1'" @click="addCar">加入购物车</div>
-                    <div class="bugtn btnbg" :class="{actived:isact}" v-if="this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
+                    <div class="bugtn btnbg" :class="{actived:isActive}" v-if="this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
                     <div class="bugtn btnbg" v-if="this.lowPrice =='0.00' && this.buyStatus == '1'" @click="receiveBuy">免费领取</div>
                   </div>
                 </div>
@@ -398,8 +398,7 @@ export default {
   },
   data() {
     return {
-      isActive:true,//秒杀活动
-      isact:false,
+      isActive:false,//秒杀活动
       backUrlShow:require("./courseImg/back.png"),
       collectionUrlShow: require("./courseImg/collection.png"),
       collectionStatus: false,
@@ -996,9 +995,10 @@ export default {
       } else {
         this.bugtype = "立即购买";
       }
-      if(this.isActive==false){
-        this.isact=true;
+      if(this.isActive==true){
         this.bugtype = "立即秒杀";
+      }else{
+        this.bugtype = "立即购买";
       }
       //直播开始时间
       var downdate = new Date(response._source.type_product_curriculaTime);
