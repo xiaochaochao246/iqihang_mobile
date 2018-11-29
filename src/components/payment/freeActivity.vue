@@ -18,7 +18,7 @@
       </div>
       <div class="couponsContent">
         <div v-for="(item,index) in activityArr.ticketList" :key="index" class="couponsList">
-          <div v-if="item.couponType == '1'" class="order-tab-list-tp"><i>{{item.discount}}</i><span>折扣券</span></div>
+          <div v-if="item.couponType == '1'" class="order-tab-list-tp"><b>￥</b><i>{{item.discount}}</i><span>折扣券</span></div>
           <div v-if="item.couponType == '2'" class="order-tab-list-tp"><b>￥</b><i>{{preferentialMoney}}</i><span>代金券</span></div>
           <ul>
             <li>编号： {{item.cardNumber}}</li>
@@ -163,7 +163,8 @@ export default {
   align-content: space-around;
 }
 .couponsList {
-  background-color: #d72e7c;
+  background: url("./paymentImg/vip-coupon.png");
+  background-size: 100% 100%;
   margin: 0.2rem auto;
   width: 92%;
   border-radius: 0.1rem;

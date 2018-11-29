@@ -565,9 +565,9 @@ export default {
   methods: {
     //获取首页静态数据
     getHomeJson(){
-      this.axios.get('http://oss2.iqihang.com/json/home_page/ceshih5.json?v='+ new Date().getTime())
+      this.axios.get('http://oss2.iqihang.com/json/home_page/h5.json?v='+ new Date().getTime())
       .then(response => {
-        this.indexBanner(response.data.bannerData)
+        this.indexBanner(response.data.bannerData);
         if (response.data.home_window && response.data.home_window.length != "0") {
             this.bannerlayer = true;
             this.brandType = response.data.home_window[0]._source.type_brand_type;

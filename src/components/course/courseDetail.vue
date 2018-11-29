@@ -8,41 +8,58 @@
       <courseKill @isactiveShow="isactiveShow" v-show="isKillShow" :associated='associated'/>
 
         <div class="courseTxt">
-          <div class="courseTitle"><img v-show="detail.type_product_classType == '2'" src="./courseImg/line_course.png" alt=""><h3 v-html="detail.type_product_title"></h3></div>
+          <div class="courseTitle">
+            <img v-show="detail.type_product_classType == '2'" src="./courseImg/line_course.png" alt="">
+            <h3 v-html="detail.type_product_title"></h3>
+          </div>
           <!--秒杀活动-->
-          <courseActive v-show="isshowActive" :associated="associated"/>
+          <courseActive v-show="isshowActive" :associated="associated" :servicesBox="servicesBox" :servicesShow="servicesShow"/>
 
           <div class="coursePrince">
-            <div v-show="!isshowActive">
-              <h3>￥<span>{{detail.type_product_lowPrice}}</span>.00</h3><i>此价格中包含服务包</i>
+            <div v-if="!isshowActive">
+              <h3>￥
+                <span>{{Price}}</span>
+                {{floatPrice}}
+              </h3>
+              <i v-if="servicesBox.length > 0 && servicesShow">此价格中包含服务包</i>
             </div>
             <!-- 试听视频按钮 -->
-            <img @click="auditionClick" v-if="classType == '1' && videoId != '1'" class="auditionBtn" src="./courseImg/audition.png" alt="">
+            <img @click="auditionClick" v-if="classType == '1' && videoId != '1' && !isshowActive" class="auditionBtn" src="./courseImg/audition.png" alt="">
+            <img @click="auditionClick" v-if="classType == '1' && videoId != '1' && isshowActive" class="auditionBtn1" src="./courseImg/audition.png" alt="">
             <p v-show="!isshowActive">￥{{detail.type_product_highPrice + '.00'}}</p>
           </div>
         </div>
+      <div v-show="activity.activitystatus" class="activityBox">
+        <span class="activitylabel"><i>满减</i></span>
+        <span v-show="activity.activityType == '1'" class="activityText">满 <i v-text="activity.lowestMoney"></i> 立减 <i v-text="activity.discountMoney"></i> 元</span>
+        <span v-show="activity.activityType == '2'" class="activityText">满 <i v-text="activity.lowestMoney"></i> 打 <i v-text="activity.discount"></i> 折</span>
+        <span class="activityTime"><img src="./courseImg/jishi.png" alt="">{{this.dataTime(activity.endTime,0)}}</span>
+      </div>
+
+      <!--<div class="activityBox">-->
+        <!--<span class="activitylabel"><i>满减</i></span>-->
+        <!--&lt;!&ndash;<span class="activityText">满1000立减100元</span>&ndash;&gt;-->
+        <!--<span class="activityText">满1000打8折</span>-->
+        <!--<span class="activityTime"><img src="./courseImg/jishi.png" alt="">2018-12-31</span>-->
+      <!--</div>-->
+
         <ul v-show="detail.type_product_classType == '2'" class="courseInfo">
-            <li><img src="./courseImg/icon_class.png" alt="">课时 {{detail.type_product_classhour}}</li>
-            <li><img src="./courseImg/icon_inventory.png" alt="">限报人数 {{detail.type_product_stock}}</li>
-            <li><img src="./courseImg/icon_time.png" alt="">课程开始时间 {{this.dataTime(detail.type_product_delAt,0)}}</li>
+          <li><img src="./courseImg/icon_class.png" alt=""><span>课时<i>{{detail.type_product_classhour}}</i></span></li>
+          <li v-if="detail.type_product_stock<500" class="stock"><span>限报人数<i>{{detail.type_product_stock}}</i></span><img src="./courseImg/icon_inventory.png" alt=""></li>
+          <li class="period"><span>课程开始时间<i>{{this.dataTime(detail.type_product_delAt,0)}}</i></span><img src="./courseImg/icon_time.png" alt=""></li>
         </ul>
         <ul v-show="detail.type_product_classType == '1'" class="courseInfo">
-            <li><img src="./courseImg/icon_class.png" alt="">课时 {{detail.type_product_classhour}}</li>
-            <li><img src="./courseImg/icon_inventory.png" alt="">库存 {{detail.type_product_stock}}</li>
-            <li><img src="./courseImg/icon_time.png" alt="">有效期 {{this.dataTime(detail.type_product_delAt,0)}}</li>
+          <li><img src="./courseImg/icon_class.png" alt=""><span>课时<i>{{detail.type_product_classhour}}</i></span></li>
+          <li v-if="detail.type_product_stock<500" class="stock"><span>库存<i>{{detail.type_product_stock}}</i></span><img src="./courseImg/icon_inventory.png" alt=""> </li>
+          <li class="period"><span>有效期 <i>{{this.dataTime(detail.type_product_delAt,0)}}</i></span><img src="./courseImg/icon_time.png" alt=""></li>
         </ul>
         <!-- 优惠活动 -->
-        <div v-show="activity.activitystatus" class="activityBox">
-            <span class="activitylabel">满减</span>
-            <span v-show="activity.activityType == '1'" class="activityText">满 <i v-text="activity.lowestMoney"></i> 立减 <i v-text="activity.discountMoney"></i> 元。</span>
-            <span v-show="activity.activityType == '2'" class="activityText">满 <i v-text="activity.lowestMoney"></i> 打 <i v-text="activity.discount"></i> 折。</span>
-            <span class="activityTime"><img src="./courseImg/icon_time.png" alt="">{{this.dataTime(activity.endTime,0)}}</span>
-        </div>
-        <ul class="preferentialBox">
-            <li v-for="(item,index) in activeBox" :key="index">
-                <div><span class="preferentialIcon"></span>满<i> {{item.classnumber}} </i>门，立减<i> {{item.classmoney}} </i>元。<span><img src="./courseImg/icon_time.png" alt="">{{item.endtime.split(' ')[0]}}</span></div>
-            </li>
-        </ul>
+        <!--<ul class="preferentialBox">-->
+            <!--<li v-for="(item,index) in activeBox" :key="index">-->
+                <!--<div><span class="preferentialIcon"></span>满<i> {{item.classnumber}} </i>门，立减<i> {{item.classmoney}} </i>元。<span><img src="./courseImg/icon_time.png" alt="">{{item.endtime.split(' ')[0]}}</span></div>-->
+            <!--</li>-->
+        <!--</ul>-->
+
         <!-- 选择科目 -->
         <ul class="chooseSubject" v-show="associated.length > 1">
             <li @click="jumpCourseDetail(item.associatedId)" v-show="index<3" :class="index == 0 ? 'action' : ''" v-for="(item,index) in associated" :key="index">{{item.associatedTitle}}</li>
@@ -52,7 +69,7 @@
         <!-- 赠课 -->
         <div v-show="freeCourse" class="sendClass"><img src="./courseImg/send_class.png" alt="">赠课·{{freeCourse}}</div>
         <!-- 赠券 -->
-        <div v-show="freeCoupon" class="sendClass"><img src="./courseImg/send_class.png" alt="">赠券·{{freeCoupon}}</div>
+        <div v-show="freeCoupon" class="sendClass"><img src="./courseImg/coupons.png" alt="">赠券·{{freeCoupon}}</div>
     </div>
 </template>
 
@@ -73,6 +90,9 @@ export default {
       // 秒杀活动
       isKillShow:false,
       isshowActive:false,
+      lowPrice:"",
+      Price:"",
+      floatPrice:""
     };
   },
   components:{
@@ -80,24 +100,61 @@ export default {
     courseKill,
     courseActive
   },
-  props: ["courseDetailData","associated","preferential","activeBox","lessonCouponArr","classType","videoId"],
+  props: ["courseDetailData","associated","preferential","activeBox","lessonCouponArr","classType","videoId","servicesShow","servicesBox"],
   watch: {
     courseDetailData() {
       this.show();
+    },
+    servicesShow(){
+      this.serverShow()
     }
   },
   methods: {
     show() {
       if(this.lessonCouponArr.length > 0){
-          this.freeCourse = this.lessonCouponArr[0]._source.type_share_infoOfCourse
-          this.freeCoupon = this.lessonCouponArr[0]._source.type_share_infoOfTicket
+          this.freeCourse = this.lessonCouponArr[0]._source.type_share_infoOfCourse;
+          this.freeCoupon = this.lessonCouponArr[0]._source.type_share_infoOfTicket;
       }
       this.detail = this.courseDetailData._source;
-      this.associated.unshift({
+      if(this.servicesBox.length>0){
+        this.lowPrice = this.detail.type_product_lowPrice+this.servicesBox[0]._source.type_coursematch_lowPrice;
+      }else{
+        this.lowPrice = this.detail.type_product_lowPrice
+      }
+      this.Price = Math.floor(this.lowPrice);
+      if(this.Price==this.lowPrice){
+        this.floatPrice=".00"
+      }else {
+        this.floatPrice="."+this.lowPrice.toString().split('.')[1];
+      }
+
+      if(this.associated.length==0){
+        this.associated.unshift({
           associatedId: this.$route.query.id,
           associatedTitle: this.detail.type_product_title,
           salesVolume: this.detail.type_product_salesVolume
-      })
+        })
+      }else{
+        this.associated.unshift({
+          associatedId: this.$route.query.id,
+          associatedTitle: this.associated[0].associatedActTitle,
+          salesVolume: this.detail.type_product_salesVolume
+        })
+      }
+    },
+    serverShow(){
+      // console.log(this.servicesBox);
+      if(this.servicesShow){
+        this.lowPrice = this.detail.type_product_lowPrice+this.servicesBox[0]._source.type_coursematch_lowPrice;
+      }else{
+        this.lowPrice = this.detail.type_product_lowPrice
+      }
+      this.Price = Math.floor(this.lowPrice);
+      if(this.Price==this.lowPrice){
+        this.floatPrice=".00"
+      }else {
+        this.floatPrice="."+this.lowPrice.toString().split('.')[1];
+      }
     },
     // 秒杀活动
     isactiveShow(isshow,isshowAct){
@@ -226,8 +283,7 @@ export default {
   float: left;
   width: 0.22rem;
   height: 0.24rem;
-  margin-top: 0.14rem;
-  margin-left: 0.2rem;
+  margin: 0.14rem .1rem 0 .2rem;
 }
 .studyPeapleNum span {
   color: white;
@@ -248,10 +304,15 @@ export default {
     margin-top: 0.12rem;
     margin-right: 0.1rem;
 }
+.coursePrince{
+  position: relative;
+}
 .courseTitle h3{
     display: inline-block;
     line-height: 0.56rem;
     font-weight: 600;
+    color:#4a4a4a;
+    font-size: .35rem;
 }
 .coursePrince h3{
     font-size: 0.24rem;
@@ -271,7 +332,15 @@ export default {
 .auditionBtn{
     width: 1.88rem;
     height: 0.52rem;
-    float: right;
+    /*float: right;*/
+  position: absolute;
+  right:.1rem;
+  top:.3rem;
+}
+.auditionBtn1{
+  width: 1.88rem;
+  height: 0.52rem;
+  margin-top:.2rem;
 }
 .coursePrince p{
     line-height: 0.34rem;
@@ -282,36 +351,59 @@ export default {
 }
 .courseInfo{
     display: flex;
-    margin: 0 0.2rem;
+    padding: 0 0.2rem;
+    width: 100%;
     border-bottom: 0.01rem solid #E7E7E7;
 }
 .courseInfo li{
     flex: 1 0 auto;
     font-weight:500;
-    font-size:0.22rem;
-    color: #9B9B9B;
-    font-weight: 500;
+    float:right;
     line-height: 0.88rem;
 }
+.courseInfo li.stock{
+  padding-right:.35rem;
+}
+.courseInfo li:first-child span{
+  float:left;
+  padding: 0 .06rem;
+}
+.courseInfo li span{
+  padding-left: .06rem;
+}
+/*.courseInfo li.stock span,.courseInfo li.period span{*/
+  /*padding-left:.1rem;*/
+/*}*/
+.courseInfo li span i{
+  padding-left:.06rem;
+}
+.courseInfo li span,.courseInfo li span i{
+  float: right;
+  color: #9B9B9B;
+  font-size:0.22rem;
+}
 .courseInfo li img{
-    display: inline-block;
-    margin-right: 0.05rem;
+  display: inline-block;
+  margin-right: 0.05rem;
+  margin-top: 0.33rem;
 }
 .courseInfo li:first-of-type img{
-    width: 0.28rem;
-    height: 0.2rem;
+  width: 0.28rem;
+  height: 0.2rem;
+  float:left;
 }
-.courseInfo li:nth-of-type(2){
+.courseInfo li.stock span,.courseInfo li.stock span i{
     color: #D70000;
+    font-weight: 600;
 }
-.courseInfo li:nth-of-type(2) img,.courseInfo li:last-of-type img{
+.courseInfo li.stock img,.courseInfo li.period img{
     height: 0.22rem;
     width: 0.22rem;
-    float: left;
-    margin-top: 0.33rem;
+    float: right;
 }
 .chooseSubject{
     display: flex;
+    /*justify-content: space-around;*/
     height: 0.9rem;
     overflow: hidden;
     margin: 0 0.2rem;
@@ -320,8 +412,8 @@ export default {
     border-bottom: 0.01rem solid #e7e7e7;
 }
 .chooseSubject li{
-    width: 28%;
-    margin-right: 3%;
+    width: 29%;
+    margin-right: 3.5%;
     border: 0.01rem solid #e7e7e7;
     height: 0.46rem;
     line-height: 0.46rem;
@@ -332,6 +424,8 @@ export default {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    box-sizing: border-box;
+    padding: 0 0.2rem;
 }
 .chooseSubject .action{
     border-color: #3EEFCB;
@@ -340,7 +434,7 @@ export default {
 }
 .chooseSubject span{
     position: absolute;
-    right: 0.2rem;
+    right: 0;
     top: 0.3rem;
     display: inline-block;
     width: 0.4rem;
@@ -348,6 +442,7 @@ export default {
 }
 .chooseSubject span img{
     display: inline-block;
+    float:right;
     width: 0.18rem;
     height: 0.31rem;
 }
@@ -367,35 +462,57 @@ export default {
     width: 0.3rem;
     height: 0.3rem;
     margin-top: 0.3rem;
-    margin-right: 0.1rem;
+    margin-right: 0.25rem;
     border-bottom: 0.01rem solid #e7e7e7;
 }
 .activityBox{
     height: 0.6rem;
-    margin: 0 0.2rem;
-    border-bottom: 0.01rem solid #e7e7e7;
+    /*margin: 0 0.2rem;*/
+    padding: 0 .2rem;
+    margin-top:.2rem;
+    background-color: #e7fffa;
+    /*border-bottom: 0.01rem solid #e7e7e7;*/
 }
 .activityBox .activitylabel{
     float: left;
     width: 0.62rem;
     height: 0.3rem;
-    background: #FF5B09;
-    border-radius: 0.05rem;
-    font-size: 0.12rem;
-    color: white;
+    background: #fc531b;
+    border-radius: 0.07rem;
     text-align: center;
     line-height: 0.3rem;
-    margin-top: 0.15rem;
+    margin-top: 0.14rem;
+}
+.activityBox .activitylabel i{
+    color:#fff;
+  text-align: center;
+  letter-spacing: .01rem;
+    display: inline-block;
+    font-size: .1rem;
+  line-height: .13rem;
+  -webkit-transform:scale(.8);
+  -moz-transform:scale(.8);
+  -o-transform:scale(.8);
+  -ms-transform:scale(.8);
+    transform:scale(.8);
 }
 .activityBox .activityText{
     color: #FF5B09;
     font-size: 0.24rem;
     font-weight: 600;
+    float:left;
+    letter-spacing: .01rem;
     margin-left: 0.2rem;
     line-height: 0.6rem;
 }
 .activityBox .activityText i{
     color: #FF5B09;
+}
+.activityBox .activityTime{
+  float:right;
+  margin-top:.04rem;
+  color:#9b9b9b;
+  font-size: .22rem;
 }
 .activityBox .activityTime img{
     height: 0.22rem;

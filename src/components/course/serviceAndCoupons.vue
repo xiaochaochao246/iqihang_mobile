@@ -3,6 +3,7 @@
         <!-- 服务包 -->
         <div class="serviceBox">
             <span @click="servicesBtn(servicesObj.id)" :class="servicesSel ? 'action servicesBtn' : 'servicesBtn'"></span>
+            <img class="servicesBtnimg" @click="servicesBtn(servicesObj.id)" src="./courseImg/popular_sel.png" alt="" v-show="servicesSel">
             <h3 v-html="servicesObj.showTitle"></h3>
             <i>{{'￥' + servicesObj.price}}<span>.00</span><img @click="layerShow = !layerShow" src="./courseImg/info.png" alt=""></i>
         </div>
@@ -29,6 +30,7 @@ export default {
         return {
             servicesObj:'',
             layerShow: false,
+            isShowimg:false,
             servicesSel: true,
             couponsShow: false
         }
@@ -55,8 +57,8 @@ export default {
             })
         },
         servicesBtn(id){
-            this.servicesSel = !this.servicesSel
-            this.$emit('servicesStatus', {status:this.servicesSel,id:id})
+          this.servicesSel = !this.servicesSel;
+          this.$emit('servicesStatus', {status:this.servicesSel,id:id})
         },
         couponClick(){
 
@@ -80,6 +82,7 @@ export default {
 }
 .serviceBox{
     line-height: 0.88rem;
+  position: relative;
 }
 .serviceBox .servicesBtn{
     width: 0.36rem;
@@ -90,8 +93,14 @@ export default {
     margin-top: 0.26rem;
     margin-right: 0.2rem;
 }
+.serviceBox img.servicesBtnimg{
+  position: absolute;
+  left:0;
+  top:.22rem;
+  width: 0.36rem;
+  height: 0.36rem;
+}
 .serviceBox .action{
-    background: #3acbae;
     border: none;
 }
 .serviceBox h3{
@@ -118,18 +127,19 @@ export default {
     margin-left: 0.1rem;
 }
 .laterService{
-    /* background-size: 100% 100%; */
-    -webkit-filter: blur(5px);
-    -moz-filter: blur(5px);
-    -o-filter: blur(5px);
-    -ms-filter: blur(5px);
-    filter: blur(5px); 
+    background-size: 100% 100%;
+    -webkit-filter: blur(10px);
+    -moz-filter: blur(10px);
+    -o-filter: blur(10px);
+    -ms-filter: blur(10px);
+    filter: blur(10px);
+    background-repeat: no-repeat;
     position: fixed;
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 100;
+    left: -0.2rem;
+    top: -0.4rem;
+    right: -0.2rem;
+    bottom: -0.4rem;
+    z-index: 101;
     opacity: 1;
 }
 .serviceImg{
@@ -149,8 +159,8 @@ export default {
     width: 0.5rem !important;
     height: 0.5rem; 
     position: absolute;
-    top: -0.1rem;
-    right: -0.1rem;
+    top: 0.15rem;
+    right: 0.1rem;
 }
 .couponsBox{
     overflow: hidden;

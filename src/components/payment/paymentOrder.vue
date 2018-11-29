@@ -340,7 +340,7 @@ export default {
 }
 .order_num span {
   color: #cacaca;
-  font-size: 0.11rem;
+  font-size: 0.2rem;
 }
 .order_info {
   height: 0.65rem;
@@ -348,7 +348,7 @@ export default {
   text-align: center;
 }
 .order_info span{
-  font-size: 0.28rem;
+  font-size: 0.285rem;
   font-weight: 600;
   color: #4a4a4a;
   width: 49%;

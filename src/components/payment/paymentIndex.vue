@@ -63,7 +63,7 @@
               <div class="item">￥{{totalPrice}}</div>
             </div>
             <!--<p>还需支付：<span>￥{{totalPrice}}</span></p>-->
-            <button @click="Orderflag && ordersub()">提交订单<span v-show="isNumber">({{number}})</span></button>
+            <button @click="Orderflag && ordersub()">立即付款<span v-show="isNumber">({{number}})</span></button>
           </div>
         </div>
       </div>
@@ -1357,7 +1357,7 @@ export default {
   float: right;
   width: 2.3rem;
   font-size: .25rem;
-  background: #ff8400;
+  background: #ff5b09;
   color: #fff;
   height: 1rem;
   line-height: 1rem;

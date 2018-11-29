@@ -4,8 +4,11 @@
     <div class="classContent">
         <h3>选择课程</h3>
         <span class="close" @click="show"><img src="./courseImg/icon_close.png" alt=""></span>
-        <div class="class" @click="jumpCourseDetail(item.associatedId)" v-for="(item,index) in associated" :key="index">
-            <span :class="subJectSel == item.associatedId ? 'action' : ''" v-html="item.associatedTitle"></span>
+        <div class="b_classBox">
+          <div class="class" @click="jumpCourseDetail(item.associatedId)" v-for="(item,index) in associated" :key="index">
+            <span v-show=" index == 0" :class="subJectSel == item.associatedId ? 'action' : ''" v-html="item.associatedTitle"></span>
+            <span v-show="subJectSel != item.associatedId && index != 0" :class="subJectSel == item.associatedId ? 'action' : ''" v-html="item.associatedTitle"></span>
+          </div>
         </div>
     </div>
 </div>
@@ -45,17 +48,18 @@ export default {
 <style scoped>
 .classBox {
   position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-size: 100% 100%;
-  -webkit-filter: blur(8px);
-  -moz-filter: blur(8px);
-  -o-filter: blur(8px);
-  -ms-filter: blur(8px);
-  filter: blur(8px);
-  z-index: 100;
+  left: -0.4rem;
+  top: -0.4rem;
+  right: -0.4rem;
+  bottom: -0.4rem;
+  background-repeat: no-repeat;
+  background-size: 100% 43%;
+  -webkit-filter: blur(10px);
+  -moz-filter: blur(10px);
+  -o-filter: blur(10px);
+  -ms-filter: blur(10px);
+  filter: blur(10px);
+  z-index: 101;
 }
 .classContent {
   position: fixed;
@@ -83,13 +87,19 @@ export default {
   width: 0.4rem;
   height: 0.4rem;
   position: absolute;
-  top: 0.27rem;
+  top: 0.2rem;
   right: 0.2rem;
 }
 .classContent span img {
   width: 100%;
 }
-.classContent div {
+.b_classBox{
+  height: 7.8rem;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+.classContent .b_classBox div {
   line-height: 0.98rem;
   border-bottom: 0.01rem solid #e7e7e7;
   font-size: 0.26rem;

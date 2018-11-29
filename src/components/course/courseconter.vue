@@ -13,8 +13,9 @@
     </div>
     <!-- <div class="couerse-img"> -->
       <!-- <img class="mainImg" :src="honeImg"> -->
-      <div class="header">
+      <div class="header" :class="!headerbgShow ? 'active' : 'headerbg'">
         <div class="back" @click="returnGo"><img :src="backUrlShow"/></div>
+        <span v-if="headerbgShow">{{detail.type_product_title}}</span>
         <div class="collection" @click="collection"><img :src="collectionUrlShow"></div>
       </div>
       <!-- <div class="couerse-type" v-if="classType == '1' && videoId != '1'">
@@ -67,9 +68,10 @@
         </ul>
       </div>
     </div> -->
-    <courseDetail @isshowActive="showActive" :classType='classType' :videoId='videoId' :lessonCouponArr='lessonCouponArr' :activeBox='activeBox' :courseDetailData="courseDetailData" :associated='associated' />
+    <courseDetail @isshowActive="showActive" :classType='classType' :videoId='videoId' :servicesShow="servicesShow" :servicesBox="servicesBox"
+                  :lessonCouponArr='lessonCouponArr' :activeBox='activeBox' :courseDetailData="courseDetailData" :associated='associated' />
     <serviceAndCoupons @servicesStatus='servicesClick' :loginStatus='userStatus' v-show="servicesBox.length > 0" :homeImg='honeImg' :servicesBox='servicesBox' />
-    <popularCollocation :userId='userId' :loginStatus='loginStatus' :addCar='addCar' :lowPrice='lowPrice' :backgroundImage='honeImg' :hotclassBox='hotclassBox' />  
+    <popularCollocation :userId='userId' :loginStatus='loginStatus' :addCar='addCar' :lowPrice='lowPrice' :backgroundImage='honeImg' :hotclassBox='hotclassBox' />
     <div class="couerse-dp">
       <!-- <div class="choose" v-show="displayAssociated" @click="chooseShow = true">选择科目<img
         src="./courseImg/class-icon.png"></div>
@@ -201,8 +203,9 @@
       </div>
       <div @click="servicesImgShow = !servicesImgShow" class="servicesPopupClose"><img :src="servicesClose" alt=""></div>
     </div>
+    <!--<div id="chapterNav" :class="!headerbgShow ? 'active' : 'flexeds'">-->
     <div id="chapterNav">
-      <mt-navbar v-model="selected">
+      <mt-navbar v-model="selected" :class="!flexedsShow ? 'active' : 'flexeds'">
         <mt-tab-item id="1">详情</mt-tab-item>
         <mt-tab-item id="2">目录</mt-tab-item>
         <mt-tab-item id="3">名师</mt-tab-item>
@@ -299,7 +302,7 @@
             <p><img src="./courseImg/customer.png"/></p>
             <p>咨询</p></a>
           </li>
-          <li @click="addCar" class="share-component">
+          <li @click="shoppingcar" class="share-component">
             <p><img src="./courseImg/shopping.png"/></p>
             <p>购物车</p>
           </li>
@@ -336,9 +339,10 @@
                 <!--未登录-->
                 <div class="buybtn-no"  v-if=" this.kucun =='0'">课程已售罄</div>
                 <div v-if="this.kucun !='0'">
-                  <div class="bugtn" v-if="this.shareAll != ''" @click="share">分享领取</div>
+                  <div class="bugtn share" v-if="this.shareAll != ''" @click="share">分享领取</div>
                   <div class="bugtn" v-if=" this.shareAll == ''" @click="addCar">加入购物车</div>
-                  <div class="bugtn btnbg" :class="{actived:isActive}" v-if="this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
+                  <div class="bugtn btnbg" :class="{actived:isActive}" v-if="this.shareAll == '' && this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
+                  <div class="bugtn btnbg1" :class="{actived:isActive}" v-if="this.shareAll != '' && this.lowPrice !='0.00'" @click="buyNow">{{bugtype}}</div>
                   <div class="bugtn btnbg" v-if="this.lowPrice =='0.00'" @click="receiveBuy">免费领取</div>
                 </div>
               </div>
@@ -348,24 +352,25 @@
                   <div class="buybtn-no"  v-if=" this.kucun =='0'">课程已售罄</div>
                   <div class="vip-btn" v-if="this.kucun !='0' && this.vipStart == '1' && this.buyStatus == '1'" @click="vipBuy()">vip专享免费领取</div>
                   <div v-if="this.kucun !='0' && this.vipStart == '0'">
-                    <div class="bugtn" v-if="this.shareAll != ''&& this.buyStatus == '1'" @click="share">分享领取</div>
+                    <div class="bugtn share" v-if="this.shareAll != ''&& this.buyStatus == '1'" @click="share">分享领取</div>
                     <div class="bugtn" v-if=" this.shareAll == '' && this.buyStatus == '1'" @click="addCar">加入购物车</div>
-                    <div class="bugtn btnbg" :class="{actived:isActive}" v-if="this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
+                    <div class="bugtn btnbg" :class="{actived:isActive}" v-if="this.shareAll == '' &&  this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
+                    <div class="bugtn btnbg1" :class="{actived:isActive}" v-if="this.shareAll != '' && this.lowPrice !='0.00' && this.buyStatus == '1'" @click="buyNow">{{bugtype}}</div>
                     <div class="bugtn btnbg" v-if="this.lowPrice =='0.00' && this.buyStatus == '1'" @click="receiveBuy">免费领取</div>
                   </div>
                 </div>
                 <div v-if=" this.buyStatus == '2'">
                   <div class="buybtn" v-if="this.promotion == '2' && this.shareAll == ''">
-                    <a :href="qqAll" target="_blank" >一键加群</a>
+                    <a :href="qqAll" target="_blank" class="qqAll">一键加群</a>
                     <span @click="jumpLocation">立即学习</span>
                   </div>
                   <div class="buybtn" v-if="this.promotion == '2' && this.shareAll != ''">
-                    <a @click="share">分享领取</a>
-                    <span @click="jumpLocation">立即学习</span>
+                    <a @click="share" class="share">分享领取</a>
+                    <span @click="jumpLocation" class="study">立即学习</span>
                   </div>
                   <div class="buybtn" v-if="this.promotion == '1' && this.shareAll != ''">
-                    <a @click="share">分享领取</a>
-                    <span @click="jumpLocation">立即学习</span>
+                    <a @click="share" class="share">分享领取</a>
+                    <span @click="jumpLocation" class="study">立即学习</span>
                   </div>
                   <div class="buybtn" @click="jumpLocation">立即学习</div>
                 </div>
@@ -398,6 +403,8 @@ export default {
   },
   data() {
     return {
+      headerbgShow:false,//是否显示头部背景，
+      flexedsShow:false,
       isActive:false,//秒杀活动
       backUrlShow:require("./courseImg/back.png"),
       collectionUrlShow: require("./courseImg/collection.png"),
@@ -431,6 +438,7 @@ export default {
       //tab
       selected: "1",
       coursesdetail: "", //课程详情
+      detail:"",
       teacherBox: [],
       classType: "",
       videoId: "",
@@ -584,27 +592,39 @@ export default {
   methods: {
     //滚动事件
     handleScroll(){
-      let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop
-      if(scrollTop>100 && !this.iconImg && this.collectionStatus){
-        this.backUrlShow = require("./courseImg/back_sel.png")
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+
+      let flexeds = $("#chapterNav").offset().top-$(window).scrollTop()-43;
+      if(flexeds<0){
+        this.flexedsShow=true;
+      }else{
+        this.flexedsShow=false;
+      }
+      if(scrollTop >= 100 && !this.iconImg && this.collectionStatus){
+        this.backUrlShow = require("./courseImg/back_sel.png");
         this.collectionUrlShow = require("./courseImg/collection2_sel.png")
         this.iconImg = true
+        this.headerbgShow = true
         return
       }
-      else if(scrollTop>100 && !this.iconImg){
+      else if(scrollTop >= 100 && !this.iconImg){
         this.backUrlShow = require("./courseImg/back_sel.png")
         this.collectionUrlShow = require("./courseImg/collection_sel.png")
         this.iconImg = true
+        this.headerbgShow = true
         return
       }else if(scrollTop < 100 && this.iconImg && this.collectionStatus){
+
         this.backUrlShow = require("./courseImg/back.png")
         this.collectionUrlShow = require("./courseImg/collection2.png")
-        this.iconImg = false
+        this.iconImg = false;
+        this.headerbgShow = false;
         return
       }else if(scrollTop < 100 && this.iconImg){
         this.backUrlShow = require("./courseImg/back.png")
         this.collectionUrlShow = require("./courseImg/collection.png")
         this.iconImg = false
+        this.headerbgShow = false;
         return
       }
     },
@@ -728,7 +748,7 @@ export default {
     courseDetail() {
       this.axios
         .get(
-          `http://oss2.iqihang.com/json/course_details/ceshi${
+          `http://oss2.iqihang.com/json/course_details/${
             this.$route.query.id
           }.json?v=` + new Date().getTime()
         )
@@ -911,6 +931,7 @@ export default {
           this.videoList = videoList;
           this.videoNum = videoNum;
           this.courseDetailData = response.data.courseDetailData.hits.hits[0];
+          this.detail = this.courseDetailData._source;
           this.classBox(response.data.courseDetailData.hits.hits[0]);
           this.classoffer(response.data.curriculumAssociation);
           this.classActive(response.data.advertisement);
@@ -928,6 +949,11 @@ export default {
     showActive(show){
       // console.log(show);
       this.isActive=show;
+      if(this.isActive==true){
+        this.bugtype = "立即秒杀";
+      }else{
+        this.bugtype = "立即购买";
+      }
     },
     classBox(response) {
       this.pcImg = response._source.type_product_pictures; //pc课程图片
@@ -993,11 +1019,6 @@ export default {
       if (this.classType == "2") {
         this.bugtype = "立即预约";
       } else {
-        this.bugtype = "立即购买";
-      }
-      if(this.isActive==true){
-        this.bugtype = "立即秒杀";
-      }else{
         this.bugtype = "立即购买";
       }
       //直播开始时间
@@ -1234,6 +1255,7 @@ export default {
       for (let i = 0; i < associatedBox.length; i++) {
         this.associated.push({
           associatedTitle: associatedBox[i]._source.type_coursematch_showname,
+          associatedActTitle : associatedBox[i]._source.type_coursematch_courseTinyName,
           associatedId: associatedBox[i]._source.type_coursematch_courseId
         });
       }
@@ -1283,10 +1305,10 @@ export default {
     // 增值服务
     servicesClick(data){
       if(data.status){
-        this.servicesShow = data.status
-        this.servicespicked = data.id
+        this.servicesShow = data.status;
+        this.servicespicked = data.id;
       }else{
-        this.servicesShow = data.status
+        this.servicesShow = data.status;
         this.servicespicked=''
       }
     },
@@ -2829,6 +2851,23 @@ export default {
   padding: 0.12rem;
   z-index: 100;
 }
+.header span{
+  color:#fff;
+  line-height: .64rem;
+  height:.64rem;
+  margin-left:.3rem;
+}
+.flexeds{
+  position: fixed;
+  left: 0;
+  top: .86rem;
+  width: 100%;
+  overflow: hidden;
+  z-index: 100;
+}
+.headerbg{
+  background-color: #3accae;
+}
 .header .back, .header .collection{
   width: 0.64rem;
   height: 0.64rem;
@@ -2999,7 +3038,7 @@ export default {
 
 .couerse-dp {
   background: #f4f4f4;
-  padding: 0.2rem 0;
+  padding: 0.12rem 0;
 }
 
 .choose,
@@ -3271,7 +3310,7 @@ export default {
 
 .coursefoot {
   width: 100%;
-  height: 1rem;
+  height: 1.1rem;
   background: #fff;
   position: fixed;
   bottom: 0;
@@ -3283,25 +3322,26 @@ export default {
 .foot-left {
   width: 40%;
   float: left;
-  height: 1rem;
+  height: 1.1rem;
 }
 .foot-left ul{
   display: flex;
 }
 .foot-left li {
   width: 50%;
-  height: 1rem;
+  height: 1.1rem;
   text-align: center;
   float: left;
-  line-height: 0.4rem;
-  padding-top: 0.1rem;
+  line-height: 0.35rem;
+  padding-top: 0.2rem;
 }
 .foot-left li p{
-  font-size: 0.12rem;
+  font-size: 0.14rem;
+  color: #9b9b9b;
 }
 .foot-left li img {
-  width: 0.35rem;
-  height: 0.35rem;
+  width: 0.4rem;
+  height: 0.4rem;
 }
 .chapter-content li .chapter-wei {
   background: #999;
@@ -3309,22 +3349,28 @@ export default {
 .foot-right {
   width: 60%;
   float: left;
-  line-height: 1rem;
+  line-height: 1.1rem;
   text-align: center;
 }
 
 .bugtn {
   width: 50%;
-  height: 1rem;
-  background: #ff8400;
+  height: 1.1rem;
+  background: #3accae;
   float: left;
   text-align: center;
   color: #fff;
-  line-height: 1rem;
+  font-size: .32rem;
+  line-height: 1.1rem;
 }
-
+.share{
+  background: #ff5b09;
+}
 .btnbg {
-  background: #3acbae;
+  background: #ff5b09;
+}
+.btnbg1{
+  background-color: #39ccaf;
 }
 .actived{
   background-color: #e20d3b;
@@ -3333,45 +3379,51 @@ export default {
 
 .buybtn {
   width: 100%;
-  height: 1rem;
+  height: 1.1rem;
   text-align: center;
   color: #fff;
-  line-height: 1rem;
+  line-height: 1.1rem;
   background: #3acbae;
 }
 .buybtn a {
   width: 50%;
-  height: 1rem;
+  height: 1.1rem;
   color: #fff;
   text-align: center;
-  line-height: 1rem;
+  line-height: 1.1rem;
   display: inline-block;
   float: left;
+}
+.buybtn a.qqAll{
+  background-color: #39ccaf;
 }
 .buybtn span {
   float: left;
   width: 50%;
-  height: 1rem;
+  height: 1.1rem;
   color: #fff;
   text-align: center;
-  line-height: 1rem;
+  line-height: 1.1rem;
   display: inline-block;
-  background: #ff8400;
+  background: #ff5b09;
+}
+.buybtn span.study{
+  background-color: #39ccaf;
 }
 .buybtn-no {
   width: 100%;
-  height: 1rem;
+  height: 1.1rem;
   text-align: center;
   color: #fff;
-  line-height: 1rem;
+  line-height: 1.1rem;
   background: #ccc;
 }
 .vip-btn {
   width: 100%;
-  height: 1rem;
+  height: 1.1rem;
   text-align: center;
   color: #fff;
-  line-height: 1rem;
+  line-height: 1.1rem;
   background: red;
 }
 
@@ -3612,10 +3664,16 @@ export default {
 }
 .mint-navbar {
   border-bottom: 0.1px solid #e2e2e2;
+  justify-content: space-around;
+}
+.mint-navbar .mint-tab-item{
+  flex: none;
+  color:#9b9b9b;
+  padding:.23rem 0;
 }
 .mint-navbar .mint-tab-item.is-selected {
   color: #3acbae;
-  border-bottom: 2px solid #3acbae;
+  border-bottom: 3px solid #3acbae;
   margin-bottom: 0;
 }
 .class-active {

@@ -1,12 +1,12 @@
 <template>
     <div>
         <div v-show="hotclassBox.length > 1" @click="popularShowClick" class="popularBox">
-            <img src="./courseImg//default.jpg" alt="">
+            <img src="./courseImg//default.png" alt="">
         </div>
         <div v-show="popularShow" :style="{backgroundImage:`url(${backgroundImage}`}" class="popularContent"></div>
         <div v-show="popularShow" class="contentBox">
+          <div class="header"><h3>热门搭配</h3><span><img @click.stop @click="popularShowClick" src="./courseImg/icon_close.png" alt=""></span></div>
             <ul class="listBox">
-                <div class="header"><h3>热门搭配</h3><span><img @click.stop @click="popularShowClick" src="./courseImg/icon_close.png" alt=""></span></div>
                 <li v-for="(item,index) in hotclassBox" :key="index">
                     <div :class="selectedId.indexOf(item.hotId) > -1 ? 'btn_left action' : 'btn_left'" @click="selectedClick(index,item.hotId)"></div>
                     <div class="content_right">
@@ -51,17 +51,18 @@
 }
 .popularContent {
   position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  background-size: 100% 100%;
-  -webkit-filter: blur(8px);
-  -moz-filter: blur(8px);
-  -o-filter: blur(8px);
-  -ms-filter: blur(8px);
-  filter: blur(8px);
-  z-index: 100;
+  background-repeat: no-repeat;
+  left: -.4rem;
+  top: -.4rem;
+  right: -.4rem;
+  bottom: -.4rem;
+  background-size: 100% 40%;
+  -webkit-filter: blur(10px);
+  -moz-filter: blur(10px);
+  -o-filter: blur(10px);
+  -ms-filter: blur(10px);
+  filter: blur(10px);
+  z-index: 101;
 }
 .contentBox {
   position: fixed;
@@ -77,7 +78,7 @@
   overflow: hidden;
 }
 .listBox {
-  height: 6.7rem;
+  height: 6.2rem;
   overflow-y: scroll;
   width: 105%;
   -webkit-overflow-scrolling: touch;
@@ -98,8 +99,8 @@
   width: 0.4rem;
   height: 0.4rem;
   position: absolute;
-  top: 0.29rem;
-  right: 0.4rem;
+  top: 0.2rem;
+  right: 0.2rem;
 
 }
 .header span img {
@@ -141,7 +142,10 @@
 }
 .content_right .textBox {
   margin-left: 2.04rem;
-  position: relative;
+  /*position: relative;*/
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   height: 100%;
 }
 .content_right .textBox h3 {
@@ -156,11 +160,11 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
-.content_right .textBox div {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-}
+/*.content_right .textBox div {*/
+  /*position: absolute;*/
+  /*left: 0;*/
+  /*bottom: 0;*/
+/*}*/
 .textBox div i {
   color: #ff5b09;
   font-size: 0.24rem;
@@ -169,7 +173,8 @@
 .textBox div span {
   color: #cacaca;
   font-size: 0.22rem;
-  margin-left: 0.2rem;
+  text-decoration: line-through;
+  /*margin-left: 0.2rem;*/
 }
 .popularBottom {
   position: fixed;
@@ -230,8 +235,8 @@ export default {
   },
   methods: {
     show() {
-        this.totalPrice = this.lowPrice
-        this.selectedId.push(this.hotclassBox[0].hotId)
+        this.totalPrice = this.lowPrice;
+        this.selectedId.push(this.hotclassBox[0].hotId);
     },
     // 热门搭配显示隐藏
     popularShowClick(){

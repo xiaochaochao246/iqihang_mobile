@@ -3,6 +3,8 @@ import Router from 'vue-router'
 //首页
 import Index from '@/components/login/index'
 import report from '@/components/404'
+
+
 //登录
 import loginIndex from '@/components/login/loginIndex'
 import binding from '@/components/login/binding'

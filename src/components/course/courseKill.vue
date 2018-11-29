@@ -1,7 +1,7 @@
 <template>
     <div class="courseKill">
       <!--秒杀前-->
-      <div v-if="kill_before">
+      <div v-if="kill_before" class="kill_before">
         <div class="courseBanner">
           <div class="killPrice">
             <span>限时秒杀价</span>
@@ -22,10 +22,10 @@
             <div>{{kill_s}}</div>
           </div>
         </div>
-        <div class="triangle_right"></div>
+        <!--<div class="triangle_right"></div>-->
       </div>
       <!--正在秒杀-->
-      <div v-if="kill_date">
+      <div v-if="kill_date" class="kill_date">
         <div class="kill_date_Banner">
           <div class="kill_date_Price">
             <span v-show="!isSoldOut">
@@ -43,7 +43,7 @@
           <div class="item">{{kill_m}}</div><i>：</i>
           <div class="item">{{kill_s}}</div>
         </div>
-        <div class="kill_date_right"></div>
+        <!--<div class="kill_date_right"></div>-->
       </div>
     </div>
 </template>
@@ -56,10 +56,10 @@
             killDesc:"",
             courseId:"",
             killTime_time:false,
-            active_start:0,//秒杀开始时间
-            floatStr:"",//截取秒杀时间
-            active_end:0,//秒杀结束时间
-            wholePrice:"",//秒杀价格
+            active_start:0,     //秒杀开始时间
+            floatStr:"",        //截取秒杀时间
+            active_end:0,       //秒杀结束时间
+            wholePrice:"",      //秒杀价格
             killPrice:"",
             floatPrice:"",
             // 秒杀前
@@ -69,10 +69,10 @@
             showTime:0,      //展示时间
             // 秒杀中
             kill_date:false,
-            isSoldOut:false,//是否抢光
-            killRemain:"",//剩余名额
-            inventory:"",//库存
-            salesVolume:0,//学习人数，
+            isSoldOut:false,     //是否抢光
+            killRemain:0,        //剩余名额
+            inventory:0,         //库存
+            salesVolume:0,       //学习人数
             // 倒计时
             kill_d:0,
             kill_h:0,
@@ -94,7 +94,6 @@
         getInterface(){
           this.courseId=this.associated[0].associatedId;
           this.salesVolume=this.associated[0].salesVolume;
-          console.log(this.salesVolume);
         },
         getData(){
           // console.log(this.courseId);
@@ -120,7 +119,6 @@
 
             }
           }).then(res=>{
-            console.log(res.data);
             if(res.data.hits.hits.length!=0){
               var act= res.data.hits.hits[0]._source;
               // 测试数据
@@ -216,12 +214,12 @@
               // var active_end = active_endDate.getTime();//活动结束时间
               leftTime=this.active_end-now;
               if(leftTime>0){
+                this.kill_d = Math.floor(leftTime/1000/60/60/24);
+                this.kill_h = Math.floor(leftTime/1000/60/60%24)+24*this.kill_d;
+                this.kill_h>9 ? this.kill_h : this.kill_h = "0"+this.kill_h;
                 this.killDesc="距结束";
                 this.kill_date=true;
                 this.kill_before=false;
-                this.kill_h = Math.floor(leftTime/1000/60/60%24);
-                this.kill_h>9 ? this.kill_h : this.kill_h = "0"+this.kill_h;
-
                 this.kill_m = Math.floor(leftTime/1000/60%60);
                 this.kill_m>9 ? this.kill_m : this.kill_m = "0"+this.kill_m;
 
@@ -263,6 +261,11 @@
     width:100%;
     position: relative;
   }
+  .kill_before{
+    height: 1.03rem;
+    background: url("./courseImg/killBg.png");
+    background-size: 100% 100%;
+  }
   .killPrice{
     height:1.03rem;
     display: flex;
@@ -273,9 +276,9 @@
     position: relative;
     display: flex;
     flex-direction: row;
-    width:65%;
+    width:69%;
     float: left;
-    background-color: #ed1f4b;
+    /*background-color: #ed1f4b;*/
   }
   .killPrice span{
     color: #fffd9b;
@@ -293,28 +296,26 @@
   .killBtn{
     position: absolute;
     bottom:.1rem;
-    left:45.5%;
-    letter-spacing: .02rem;
+    left:41.5%;
     background-color: #c81a3f;
     display: inline-block;
     height:.45rem;
     color:#fff;
     line-height: .45rem;
-    text-align: center;
     padding:0 .15rem;
     border-radius: 6px;
     font-size: .23rem;
   }
   .killTime{
     font-size: .27rem;
-    width: 35%;
+    width: 31%;
     height:1.03rem;
     float: right;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: linear-gradient(#fefee8, #f7f48b);
-    background-size: 100% 100%;
+    /*background: linear-gradient(#fefee8, #f7f48b);*/
+    /*background-size: 100% 100%;*/
   }
   .killTime_desc{
     margin-bottom:.1rem;
@@ -339,15 +340,21 @@
     font-weight: 600;
     color: #ed1f4b;
   }
-  .triangle_right{
-    position: absolute;
-    right:34.96%;
-    width: 0px;
-    height: 0px;
-    border: .53rem solid transparent;
-    border-right: .4rem solid #f9f8b2;
-  }
+  /*.triangle_right{*/
+    /*position: absolute;*/
+    /*right:34.96%;*/
+    /*width: 0px;*/
+    /*height: 0px;*/
+    /*border: .53rem solid transparent;*/
+    /*border-right: .4rem solid #f9f8b2;*/
+    /*!*box-shadow: #fadaad 10px 10px 30px 5px ;//边框阴影*!*/
+  /*}*/
   /*正在秒杀*/
+  .kill_date{
+    height:.68rem;
+    background: url("./courseImg/killBg2.png");
+    background-size: 100% 100%;
+  }
   .kill_date_Banner{
     width:100%;
     position: relative;
@@ -356,7 +363,7 @@
     line-height: .68rem;
     height:.68rem;
     float: left;
-    background-color: #ed1f4b;
+    /*background-color: #ed1f4b;*/
     width:56%;
   }
   .kill_date_Price span.kill_date_null{
@@ -385,7 +392,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(#fefee8, #f7f48b);
+    /*background: linear-gradient(#fefee8, #f7f48b);*/
     background-size: 100% 100%;
   }
   .kill_date_date i{
@@ -412,13 +419,13 @@
     color: #ed1f4b;
     margin-right:.15rem;
   }
-  .kill_date_right{
-    position: absolute;
-    right:44%;
-    top:0;
-    width: 0px;
-    height: 0px;
-    border: .35rem solid transparent;
-    border-right: .3rem solid #f9f8b2;
-  }
+  /*.kill_date_right{*/
+    /*position: absolute;*/
+    /*right:44%;*/
+    /*top:0;*/
+    /*width: 0px;*/
+    /*height: 0px;*/
+    /*border: .35rem solid transparent;*/
+    /*border-right: .3rem solid #f9f8b2;*/
+  /*}*/
 </style>
